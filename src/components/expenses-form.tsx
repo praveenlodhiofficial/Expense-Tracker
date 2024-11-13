@@ -1,34 +1,32 @@
 'use client'
 
 import { createExpenseAction } from '@/lib/actions'
-import React, { useState } from 'react'
+import React from 'react'
 import { useActionState } from 'react'
+import { Button } from './ui/button'
 
 const ExpensesForm = () => {
     const [state, action] = useActionState(createExpenseAction, null)
 
     return (
-        <div>
-            <h3 className="text-xl font-bold">Add new Items</h3>
+        <div className='border px-3 py-5 rounded-md border-dashed'>
+
+            <h3 className="text-xl font-bold text-center uppercase">Add new Items</h3>
+
             <form action={action} className="mt-3 flex flex-col gap-4">
                 <input
                     type="text"
                     name='title'
                     placeholder='Title'
-                    className='border border-zinc-300 p-2'
+                    className='text-center border border-dashed rounded-md tracking-widest border-zinc-300 p-2'
                 />
                 <input
                     type="number"
                     name='amount'
-                    placeholder='Amount'
-                    className='border border-zinc-300 p-2'
+                    placeholder='Amount ($)'
+                    className='text-center border border-dashed rounded-md tracking-widest border-zinc-300 p-2'
                 />
-                <button
-                    type='submit'
-                    className='bg-purple-600 p-2 text-white'
-                >
-                    Add Items
-                </button>
+                <Button type='submit' className='uppercase'>Add Items</Button>
             </form>
 
         </div>
