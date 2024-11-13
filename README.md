@@ -1,82 +1,183 @@
-1. Create next application: npx create-next-app@latest .
+# Expense Calculator with Prisma and Neon
+This project demonstrates a Next.js application using Prisma as an ORM and Neon as the database.
 
-2. Using Prisma (ORM): npx prisma init
+## Getting Started
 
-2.a To setup prisma with the neion driver, use the prisma drive adapter. this adapter allow you to choose a different database driver than prisma default driver for communicating with your database.
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
-2.b Enable the bold(driveAdapters) Preview feature flag in bold(prisma/schema.prisma) file
+### Prerequisites
 
-'''bash
-generator client {
-  provider = "prisma-client-js"
-  previewFeatures = ["driverAdapters"]
-}
-'''
+* Node.js and npm (or yarn) installed.
+* A Neon account (for database access).  You'll need to obtain a `DATABASE_URL` environment variable from your Neon project.
 
-2.c Install the prisma adapter, Neon serverless driver, and websocket (ws)
+## Installation
 
-'''bash
-npm install @prisma/adapter-neon @neondatabase/serverless ws
-npm install -D @types/ws
-'''
+1. **Clone the repository:**
 
-2.d Install the bold(prisma client)
-'''bash 
-npm i @prisma/client
-'''
+   ```bash
+   git clone <repository_url>
+   cd <project_name>
+   ```
+   
+2. **Install dependencies:**
 
-2.e  Install prisma client that is tailored according to our specific database schema which makes it easy to run the typesafe queries and access the different tables & different functions that are accesisbke through prisma client.
+   ```bash
+   npm install
+   ```
+      
+3. **Set up environment variables:**
+    - Create a .env file (or use your preferred environment variable management method) and add your Neon database URL:
 
-so to instantiate the prisma client in bold(lib/prisma.ts):
+       ```bash
+       DATABASE_URL=<your_neon_database_url>
+       ```
+         
+4. **Run the development server:**
+    - A Neon account (for database access).  You'll need to obtain a `DATABASE_URL` environment variable from your Neon project.
 
-add this page link 'prisma docs - prisma with nextjs': https://www.prisma.io/docs/orm/more/help-and-troubleshooting/help-articles/nextjs-prisma-client-dev-practices#solution
+       ```bash
+       npm run dev
+       ```
 
-add this page link 'neon docs update you prisma client instance': https://neon.tech/docs/guides/prisma
+## Prisma with Neon Serverless Setup
+This project uses Prisma as an Object-Relational Mapper (ORM) to interact with the Neon database for a Next.js application.
 
-with this step we have combined to tell prisma to use neon serverless driver instead of prisma default driver
+### 1. **Create a New Next.js Application**
 
-...bash
-import ws from 'ws'
-import { PrismaClient } from '@prisma/client'
-import { PrismaNeon } from '@prisma/adapter-neon'
-import { Pool, neonConfig } from '@neondatabase/serverless'
+   ```bash
+    npx create-next-app@latest .
+   ```
+ 
+### 2. **Set Up Prisma ORM:** 
+- Run the following command to initialize Prisma in your project:
 
-const prismaClientSingleton = () => {
-  neonConfig.webSocketConstructor = ws
-  const connectionString = `${process.env.DATABASE_URL}`
+   ```bash
+    npx prisma init
+   ```
+    
+#### 2.1. **Set Up Neon Driver Adapter:**
+- To use the Neon driver, configure Prisma to use a different database driver with the driverAdapters feature.
+- Open your prisma/schema.prisma file and add the following to enable the Neon driver:
 
-  const pool = new Pool({ connectionString })
-  const adapter = new PrismaNeon(pool)
-  const prisma = new PrismaClient({ adapter })
+    ```bash
+        generator client {
+        provider = "prisma-client-js"
+        previewFeatures = ["driverAdapters"]
+        }
+        
+        datasource db {
+        provider = "postgresql" // Neon uses PostgreSQL
+        url = env("DATABASE_URL")
+        }
+    ```
 
-  return prisma
-}
+#### 2.2. **Install Required Packages:**
+- Install the Prisma adapter, Neon serverless driver, and WebSocket:
 
-declare const globalThis: {
-  prismaGlobal: ReturnType<typeof prismaClientSingleton>
-} & typeof global
+    ```bash
+        npm install @prisma/adapter-neon @neondatabase/serverless ws
+        npm install -D @types/ws
+    ```
+     
+#### 2.3. **Install Prisma Client:**
+- Install the Prisma Client to interact with your database:
 
-const prisma = globalThis.prismaGlobal ?? prismaClientSingleton()
+    ```bash
+        npm install @prisma/client
+    ```
 
-if (process.env.NODE_ENV !== 'production') globalThis.prismaGlobal = prisma
+#### 2.4. **Configure Prisma with Neon:**
+- Create a lib/prisma.ts file to set up your Prisma client:
 
-export default prisma
+    ```bash
+        import ws from 'ws';
+        import { PrismaClient } from '@prisma/client';
+        import { PrismaNeon } from '@prisma/adapter-neon';
+        import { Pool, neonConfig } from '@neondatabase/serverless';
 
-...
+        const prismaClientSingleton = () => {
+        neonConfig.webSocketConstructor = ws;
+        const connectionString = `${process.env.DATABASE_URL}`;
+        
+        const pool = new Pool({ connectionString });
+        const adapter = new PrismaNeon(pool);
+        const prisma = new PrismaClient({ adapter });
 
-2.f npm i bufferutil --save-dev
+        return prisma;
+        };
 
+        declare const globalThis: {
+        prismaGlobal: ReturnType<typeof prismaClientSingleton>;
+        } & typeof global;
 
-3. Creating a database Schema
+        const prisma = globalThis.prismaGlobal ?? prismaClientSingleton();
 
-3.1 Create an Expence model in prisma/schema.prisma
+        if (process.env.NODE_ENV !== 'production') globalThis.prismaGlobal = prisma;
 
-...bash
-model Expense {
-    id        String    @id @default(uuid())
-    createdAt DateTime  @default(now())
-    updatedAt DateTime  @updatedAt
-    title     String    @db.VarChar(255)
-    amount    Int
-}
-...
+        export default prisma;
+    ```
+
+- This code configures Prisma to use the Neon serverless driver instead of the default one.
+
+- For more details, refer to the official Prisma and Neon docs:
+    - [Prisma with Next.js Docs](https://www.prisma.io/docs/orm/more/help-and-troubleshooting/help-articles/nextjs-prisma-client-dev-practices#solution)
+    - [Neon Docs: Update Your Prisma Client Instance](https://neon.tech/docs/guides/prisma)
+     
+#### 2.5. **Install Additional Dependency for WebSockets:**
+- Install the bufferutil package as a development dependency:
+
+    ```bash
+        npm install bufferutil --save-dev
+    ```
+    
+ 
+### 3. **Create the Database Schema**
+
+#### 3.1. **Define the Expense Model:**
+- In your prisma/schema.prisma, define the Expense model:
+
+    ```bash
+        model Expense {
+        id        String   @id @default(uuid())
+        createdAt DateTime @default(now())
+        updatedAt DateTime @updatedAt
+        title     String   @db.VarChar(255)
+        amount    Int
+        }
+    ```
+
+#### 3.2. **Apply Migrations:**
+- Run the following command to apply migrations to your database:
+
+    ```bash
+        npx prisma migrate dev --name init
+    ```
+
+- This command will:
+    - Create a new SQL migration file.
+    - Apply the migration to the database.
+    - Regenerate the Prisma Client.
+
+- If the client isn’t generated automatically, run:
+
+    ```bash
+        npx prisma generate
+    ```
+
+#### 3.3. **Launch Prisma Studio:**
+- You can use Prisma Studio to visually interact with your database:
+
+    ```bash
+        npx prisma studio
+    ```
+
+## Additional Notes
+
+### 1. **bufferutil:** 
+- The bufferutil package is required by the Neon adapter and is included in the package.json.
+
+### 2. **Error Handling:** 
+- Remember to add proper error handling to your Prisma queries in your Next.js application.
+
+### 3. **Preview Features:** 
+- The driverAdapters preview feature is enabled in schema.prisma. Be aware of potential instability associated with preview features.
