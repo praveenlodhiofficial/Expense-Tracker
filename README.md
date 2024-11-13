@@ -36,5 +36,47 @@ add this page link 'neon docs update you prisma client instance': https://neon.t
 with this step we have combined to tell prisma to use neon serverless driver instead of prisma default driver
 
 ...bash
+import ws from 'ws'
+import { PrismaClient } from '@prisma/client'
+import { PrismaNeon } from '@prisma/adapter-neon'
+import { Pool, neonConfig } from '@neondatabase/serverless'
 
+const prismaClientSingleton = () => {
+  neonConfig.webSocketConstructor = ws
+  const connectionString = `${process.env.DATABASE_URL}`
+
+  const pool = new Pool({ connectionString })
+  const adapter = new PrismaNeon(pool)
+  const prisma = new PrismaClient({ adapter })
+
+  return prisma
+}
+
+declare const globalThis: {
+  prismaGlobal: ReturnType<typeof prismaClientSingleton>
+} & typeof global
+
+const prisma = globalThis.prismaGlobal ?? prismaClientSingleton()
+
+if (process.env.NODE_ENV !== 'production') globalThis.prismaGlobal = prisma
+
+export default prisma
+
+...
+
+2.f npm i bufferutil --save-dev
+
+
+3. Creating a database Schema
+
+3.1 Create an Expence model in prisma/schema.prisma
+
+...bash
+model Expense {
+    id        String    @id @default(uuid())
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    title     String    @db.VarChar(255)
+    amount    Int
+}
 ...

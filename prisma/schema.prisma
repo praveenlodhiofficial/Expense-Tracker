@@ -13,3 +13,11 @@ datasource db {
   provider = "postgresql" // Neon uses PostgreSQL
   url      = env("DATABASE_URL")
 }
+
+model Expense {
+    id        String    @id @default(uuid())
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    title     String    @db.VarChar(255)
+    amount    Int
+}
