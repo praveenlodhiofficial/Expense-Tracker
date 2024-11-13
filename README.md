@@ -1,36 +1,40 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+1. Create next application: npx create-next-app@latest .
 
-## Getting Started
+2. Using Prisma (ORM): npx prisma init
 
-First, run the development server:
+2.a To setup prisma with the neion driver, use the prisma drive adapter. this adapter allow you to choose a different database driver than prisma default driver for communicating with your database.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+2.b Enable the bold(driveAdapters) Preview feature flag in bold(prisma/schema.prisma) file
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+'''bash
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+'''
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+2.c Install the prisma adapter, Neon serverless driver, and websocket (ws)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+'''bash
+npm install @prisma/adapter-neon @neondatabase/serverless ws
+npm install -D @types/ws
+'''
 
-## Learn More
+2.d Install the bold(prisma client)
+'''bash 
+npm i @prisma/client
+'''
 
-To learn more about Next.js, take a look at the following resources:
+2.e  Install prisma client that is tailored according to our specific database schema which makes it easy to run the typesafe queries and access the different tables & different functions that are accesisbke through prisma client.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+so to instantiate the prisma client in bold(lib/prisma.ts):
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+add this page link 'prisma docs - prisma with nextjs': https://www.prisma.io/docs/orm/more/help-and-troubleshooting/help-articles/nextjs-prisma-client-dev-practices#solution
 
-## Deploy on Vercel
+add this page link 'neon docs update you prisma client instance': https://neon.tech/docs/guides/prisma
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+with this step we have combined to tell prisma to use neon serverless driver instead of prisma default driver
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+...bash
+
+...
