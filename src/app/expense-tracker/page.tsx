@@ -1,5 +1,6 @@
 import ExpensesForm from "@/components/expense-tracker/expenses-form";
 import { getExpenses } from "@/lib/expense-tracker/expenses";
+import Link from "next/link";
 
 export default async function ExpenceTracker() {
   const expenses = await getExpenses();
@@ -11,7 +12,7 @@ export default async function ExpenceTracker() {
         {/* Title */}
         <div className="text-center">
           <h1 className="font-bold text-3xl text-center underline-offset-8 underline">Expenses Tracker</h1>
-          <h2 className="text-zinc-800 font-semibold mt-2 text-center text-xs">Using Neon: Serverless Postgres</h2>
+          <Link href='/' className="text-zinc-800 font-semibold mt-2 text-center text-[10px] ">Using Neon: Serverless Postgres</Link>
         </div>
 
         {/* Content */}

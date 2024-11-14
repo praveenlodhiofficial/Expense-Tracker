@@ -24,3 +24,12 @@ model Expense {
     price    Int
 
 }
+
+// TODOS ------------------------------------------------------------>
+model Todo {
+  id    String  @id   @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  title String @db.VarChar(20)
+  description String @db.VarChar()
+}
