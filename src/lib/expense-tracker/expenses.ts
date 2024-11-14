@@ -5,9 +5,10 @@ export async function getExpenses() {
 }
 
 export async function createExpenses(
-    data: { 
-        amount: number; 
-        title: string 
+    data: {
+        title: string,
+        quantity: number,
+        price: number;
     }) {
     return await prisma.expense.create({
         data
